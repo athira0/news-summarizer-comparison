@@ -1,3 +1,4 @@
 txtai[all]
 streamlit
 PyPDF2
+datasets
