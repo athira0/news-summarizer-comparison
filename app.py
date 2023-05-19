@@ -129,43 +129,12 @@ if choice == "Summarize Text":
             sum4=generate_t5_summary(input_text)
             st.error("t5 Summary : "+''.join(str(x) for x in sum4))
 
-#         if st.button("Summarize Text 1"):
-#             with col1:
-#                 st.markdown("**Summary Result 1**")
-#                 st.success("Summary1")
-#         if st.button("Summarize Text 2"):
-#             with col2:
-#                 st.markdown("**Summary Result 2**")
-#                 st.success("Summary2")
-# #                 result = text_summary(input_text)
-# #                 st.success(result)
+
 
 elif choice == "Summarize Document":
     st.subheader("Summarize Document using txtai")
     input_file = st.file_uploader("Upload your document here", type=['pdf'])
-#     if input_text is not None:
-# #         row1, row2, row3, row4 = st.rows([1,1,1,1])
-#         checks = st.columns(4)
-#         with checks[0]:
-#             model1 = st.checkbox('Model 1')
-#         with checks[1]:
-#             model2 = st.checkbox('Model 2')
-#         with checks[2]:
-#             model3 = st.checkbox('Model 3')
-#         with checks[3]:
-#             model4 = st.checkbox('Model 4')
-#         if model1:
-#             st.markdown("**Summary Result 1**")
-#             st.success("Summary1")
-#         if model2:
-#             st.markdown("**Summary Result 2**")
-#             st.success("Summary2")
-#         if model3:
-#             st.markdown("**Summary Result 3**")
-#             st.success("Summary3")
-#         if model4:
-#             st.markdown("**Summary Result 4**")
-#             st.success("Summary4")
+
     if input_file is not None:
         if st.button("Summarize Document"):
             with open("doc_file.pdf", "wb") as f:
