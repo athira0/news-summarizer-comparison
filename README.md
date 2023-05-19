@@ -3,7 +3,6 @@
 Abstractive summarization is the process of generating a summary of a text by understanding its meaning and creating a new text that conveys the same information in a shorter form.  
 <a href="#Documentations">Read More</a>
 This project focuses on abstractive text summarization using BERT, BART, T5, and RoBERTa machine learning techniques. The models are applied to generate accurate summaries of news articles from the CNN-DailyMail News dataset.
-<a href="#Documentations">Read More</a>
 
 <br>
 
