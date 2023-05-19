@@ -7,16 +7,19 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from transformers import pipeline
 
 @st.cache_resource
+#to get the fine-tuned bart model
 def get_bart_model():
     return pipeline("summarization", model="facebook/bart-large-cnn")
 
 @st.cache_data
+#to generate the bart model summary
 def generate_bart_summary(input):
     summarizer = get_bart_model()
     res = summarizer(input, max_length=130, min_length=30, do_sample=False)
     return res[0]['summary_text']
 
 @st.cache_resource
+#to get the fine-tuned bert model
 def get_bert_model():
     tokenizer = AutoTokenizer.from_pretrained("patrickvonplaten/bert2bert_cnn_daily_mail")
     model = AutoModelForSeq2SeqLM.from_pretrained("patrickvonplaten/bert2bert_cnn_daily_mail")
@@ -38,14 +41,15 @@ def generate_bert_summary(input):
     return output_str
 
 @st.cache_resource
+#to get the fine-tuned t5 model
 def get_t5_model():
     tokenizer = AutoTokenizer.from_pretrained("T-Systems-onsite/mt5-small-sum-de-en-v2")
     model = AutoModelForSeq2SeqLM.from_pretrained("T-Systems-onsite/mt5-small-sum-de-en-v2")
     model.to("cpu")
     return tokenizer,model
 
-# Generate t5 Summary
 @st.cache_data
+#to generate the t5 model summary
 def generate_t5_summary(input):
     # Tokenizer will automatically set [BOS] <text> [EOS]
     tokenizer,model=get_t5_model()
@@ -57,6 +61,7 @@ def generate_t5_summary(input):
     return output_str
 
 @st.cache_resource
+#to get the fine-tuned roberta model
 def get_roberta_model():
     tokenizer = AutoTokenizer.from_pretrained("google/roberta2roberta_L-24_cnn_daily_mail")
 
@@ -64,8 +69,8 @@ def get_roberta_model():
     model.to("cpu")
     return tokenizer,model
 
-# Generate t5 Summary
 @st.cache_data
+#to generate the roberta model summary
 def generate_roberta_summary(input):
     # Tokenizer will automatically set [BOS] <text> [EOS]
     tokenizer,model=get_roberta_model()
@@ -107,6 +112,7 @@ if choice == "Summarize Text":
     st.subheader("Summarize the news using a Transformer of your choice")
     input_text = st.text_area("Enter your text here")
     if input_text is not None:
+        #displays checkboxes
         checks = st.columns(4)
         with checks[0]:
             model1 = st.checkbox("Bert Summary")
@@ -116,6 +122,7 @@ if choice == "Summarize Text":
             model3 = st.checkbox('Roberta Summary')
         with checks[3]:
             model4 = st.checkbox('t5 Summary')
+        #displays summaries depending on the selected checkboxes
         if model1:
             sum1=generate_bert_summary(input_text)
             st.success("Bert Summary : "+''.join(str(x) for x in sum1))
