@@ -21,6 +21,11 @@ My Streamlit app allows us to process both raw text and PDF files to get a summa
 - Install the dependencies
 - Execute `streamlit run app.py`
 
+# Sample Input:
+Gmail will soon have a feature that will write entire emails for you using AI, Google announced on Wednesday at its Google I/O event.
+
+The feature, dubbed "help me write," is basically an expansion of the auto-replies and generative text that Google already uses in Gmail. While announcing the feature, Sundar Pichai, CEO of Google, used an example of asking an airline for a refund for a flight. The AI feature pulls info from previous exchanges with the airline and creates an entire message asking for the refund. You can then edit that message to your liking and send it away.
+
 # Sample Output
 <img src="sampleOutput.png" width="600" height="300">
 
