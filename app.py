@@ -7,14 +7,19 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from transformers import pipeline
 
 @st.cache_resource
+#to get the fine-tuned bart model
 def get_bart_model():
-    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+    return pipeline("summarization", model="facebook/bart-large-cnn")
 
 @st.cache_data
+#to generate the bart model summary
 def generate_bart_summary(input):
-    return summarizer(input, max_length=130, min_length=30, do_sample=False)
+    summarizer = get_bart_model()
+    res = summarizer(input, max_length=130, min_length=30, do_sample=False)
+    return res[0]['summary_text']
 
 @st.cache_resource
+#to get the fine-tuned bert model
 def get_bert_model():
     tokenizer = AutoTokenizer.from_pretrained("patrickvonplaten/bert2bert_cnn_daily_mail")
     model = AutoModelForSeq2SeqLM.from_pretrained("patrickvonplaten/bert2bert_cnn_daily_mail")
@@ -36,14 +41,15 @@ def generate_bert_summary(input):
     return output_str
 
 @st.cache_resource
+#to get the fine-tuned t5 model
 def get_t5_model():
-    tokenizer = AutoTokenizer.from_pretrained("minhtoan/t5-finetune-cnndaily-news")
-    model = AutoModelForSeq2SeqLM.from_pretrained("minhtoan/t5-finetune-cnndaily-news")
+    tokenizer = AutoTokenizer.from_pretrained("T-Systems-onsite/mt5-small-sum-de-en-v2")
+    model = AutoModelForSeq2SeqLM.from_pretrained("T-Systems-onsite/mt5-small-sum-de-en-v2")
     model.to("cpu")
     return tokenizer,model
 
-# Generate t5 Summary
 @st.cache_data
+#to generate the t5 model summary
 def generate_t5_summary(input):
     # Tokenizer will automatically set [BOS] <text> [EOS]
     tokenizer,model=get_t5_model()
@@ -51,6 +57,27 @@ def generate_t5_summary(input):
     outputs = model.generate(input_ids,max_length=200)
     # all special tokens including will be removed
     output_str = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    return output_str
+
+@st.cache_resource
+#to get the fine-tuned roberta model
+def get_roberta_model():
+    tokenizer = AutoTokenizer.from_pretrained("google/roberta2roberta_L-24_cnn_daily_mail")
+
+    model = AutoModelForSeq2SeqLM.from_pretrained("google/roberta2roberta_L-24_cnn_daily_mail")
+    model.to("cpu")
+    return tokenizer,model
+
+@st.cache_data
+#to generate the roberta model summary
+def generate_roberta_summary(input):
+    # Tokenizer will automatically set [BOS] <text> [EOS]
+    tokenizer,model=get_roberta_model()
+    input_ids = tokenizer(input, return_tensors="pt").input_ids
+    output_ids = model.generate(input_ids)[0]
+    # all special tokens including will be removed
+    output_str = tokenizer.decode(output_ids, skip_special_tokens=True)
 
     return output_str
 
@@ -75,72 +102,46 @@ def extract_text_from_pdf(file_path):
 
 choice = st.sidebar.selectbox("Select your choice", ["Summarize Text", "Summarize Document"])
 get_bert_model()
-get_t5_model()
 get_bart_model()
+get_roberta_model()
+get_t5_model()
+
 
 
 if choice == "Summarize Text":
-    st.subheader("Summarize Text using txtai")
+    st.subheader("Summarize the news using a Transformer of your choice")
     input_text = st.text_area("Enter your text here")
     if input_text is not None:
+        #displays checkboxes
         checks = st.columns(4)
         with checks[0]:
-            model1 = st.checkbox("Model 1")
+            model1 = st.checkbox("Bert Summary")
         with checks[1]:
-            model2 = st.checkbox('Model 2')
+            model2 = st.checkbox('Bart Summary')
         with checks[2]:
-            model3 = st.checkbox('Model 3')
+            model3 = st.checkbox('Roberta Summary')
         with checks[3]:
-            model4 = st.checkbox('Model 4')
+            model4 = st.checkbox('t5 Summary')
+        #displays summaries depending on the selected checkboxes
         if model1:
             sum1=generate_bert_summary(input_text)
-            st.success(''.join(str(x) for x in sum1))
+            st.success("Bert Summary : "+''.join(str(x) for x in sum1))
         if model2:
-            st.info("Summary Result 2")
+            sum2=generate_bart_summary(input_text)
+            st.info("Bart Summary : "+''.join(str(x) for x in sum2))
         if model3:
-            sum3=generate_t5_summary(input_text)
-            st.warning(''.join(str(x) for x in sum3))
+            sum3=generate_roberta_summary(input_text)
+            st.warning("Roberta Summary : "+''.join(str(x) for x in sum3))
         if model4:
             sum4=generate_t5_summary(input_text)
-            st.error(''.join(str(x) for x in sum4))
+            st.error("t5 Summary : "+''.join(str(x) for x in sum4))
 
-#         if st.button("Summarize Text 1"):
-#             with col1:
-#                 st.markdown("**Summary Result 1**")
-#                 st.success("Summary1")
-#         if st.button("Summarize Text 2"):
-#             with col2:
-#                 st.markdown("**Summary Result 2**")
-#                 st.success("Summary2")
-# #                 result = text_summary(input_text)
-# #                 st.success(result)
+
 
 elif choice == "Summarize Document":
     st.subheader("Summarize Document using txtai")
     input_file = st.file_uploader("Upload your document here", type=['pdf'])
-#     if input_text is not None:
-# #         row1, row2, row3, row4 = st.rows([1,1,1,1])
-#         checks = st.columns(4)
-#         with checks[0]:
-#             model1 = st.checkbox('Model 1')
-#         with checks[1]:
-#             model2 = st.checkbox('Model 2')
-#         with checks[2]:
-#             model3 = st.checkbox('Model 3')
-#         with checks[3]:
-#             model4 = st.checkbox('Model 4')
-#         if model1:
-#             st.markdown("**Summary Result 1**")
-#             st.success("Summary1")
-#         if model2:
-#             st.markdown("**Summary Result 2**")
-#             st.success("Summary2")
-#         if model3:
-#             st.markdown("**Summary Result 3**")
-#             st.success("Summary3")
-#         if model4:
-#             st.markdown("**Summary Result 4**")
-#             st.success("Summary4")
+
     if input_file is not None:
         if st.button("Summarize Document"):
             with open("doc_file.pdf", "wb") as f:
